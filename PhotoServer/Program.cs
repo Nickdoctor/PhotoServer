@@ -10,6 +10,17 @@ builder.Services.AddControllersWithViews();
 // Connect to PostgreSQL using the connection string from appsettings.json
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Enable CORS for the React frontend
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ReactAppPolicy",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173") // Vite default
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 
 var app = builder.Build();
 
@@ -25,7 +36,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseCors("ReactAppPolicy");
 app.UseAuthorization();
 
 app.MapControllerRoute(

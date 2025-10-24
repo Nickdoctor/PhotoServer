@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PhotoServer.Data;
+using PhotoServer.Models;
 
 namespace PhotoServer.Controllers
 {
@@ -7,10 +10,13 @@ namespace PhotoServer.Controllers
     public class UploadController : ControllerBase // Controller to handle file uploads
     {
         private readonly IWebHostEnvironment _env; // To get the web root path
+        private readonly AppDbContext _context; // Add database context
 
-        public UploadController(IWebHostEnvironment env) // Constructor to inject IWebHostEnvironment
+
+        public UploadController(IWebHostEnvironment env, AppDbContext context) // Constructor to inject IWebHostEnvironment
         {
             _env = env;
+            _context = context;
         }
 
         [HttpPost]
@@ -39,8 +45,23 @@ namespace PhotoServer.Controllers
             {
                 await file.CopyToAsync(stream);
             }
+            var photo = new Photo
+            {
+                FileName = fileName,
+                Url = $"/uploads/{fileName}",
+                UploadedAt = DateTime.UtcNow
+            };
 
-            return Ok(new { message="Upload ok",fileName, url = $"/uploads/{fileName}" });
+            _context.Photos.Add(photo);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Upload ok, Photo added to folder and metadata saved to database",
+                photoId = photo.Id,
+                fileName = photo.FileName,
+                url = photo.Url
+            });
         }
     }
 }

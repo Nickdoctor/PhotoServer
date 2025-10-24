@@ -8,7 +8,7 @@
         public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
 
         // Foreign key relationship
-        public int AlbumId { get; set; } // Connecting Photo to a Album
+        public int? AlbumId { get; set; } // Connecting Photo to a Album (currently optional, can be null)
         public Album? Album { get; set; } // Navigation property Photo.Album is a reference navigation property
                                           // that allows you to access the Album object associated with a specific Photo.
     }

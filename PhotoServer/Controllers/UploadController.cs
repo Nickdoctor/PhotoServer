@@ -46,15 +46,17 @@ namespace PhotoServer.Controllers
             {
                 await file.CopyToAsync(stream);
             }
-            var photo = new Photo
+
+            var photo = new Photo //Create a new Photo object to save metadata to database
+
             {
                 FileName = fileName,
                 Url = $"/uploads/{fileName}",
                 UploadedAt = DateTime.UtcNow
             };
 
-            _context.Photos.Add(photo);
-            await _context.SaveChangesAsync();
+            _context.Photos.Add(photo); // Add the photo metadata to the database context
+            await _context.SaveChangesAsync(); // Save changes to the database
 
             return Ok(new
             {
@@ -64,11 +66,18 @@ namespace PhotoServer.Controllers
                 url = photo.Url
             });
         }
-        [HttpPost("cleanup")]
+        [HttpPost("cleanup")] // Endpoint to clean up missing files (POST /api/upload/cleanup) Called when the user refreshes the page or on server startup
         public IActionResult CleanupMissingFiles()
         {
-            PhotoCleanup.CleanupMissingFiles(_context, _env);
-            return Ok(new { message = "Cleanup complete" });
+            try
+            {
+                PhotoCleanup.CleanupMissingFiles(_context, _env);
+                return Ok(new { message = "Cleanup complete" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Cleanup failed", error = ex.Message });
+            }
         }
     }
 }

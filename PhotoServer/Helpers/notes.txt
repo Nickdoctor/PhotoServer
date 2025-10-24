@@ -1,0 +1,15 @@
+c# -Object Or Prog Lang
+ASP.net Core - Framework to build server (newer than asp.net)
+postman -API tester (Send a post to an end point to see what happens)
+pgadmin4 postgresSQL (postgres username. Gugliemo**** Password or password 
+
+Notes:
+1. Will need a create album button 
+
+To run:
+1. Visual Studio Code for front end ( npm run dev ) (Can be ran inside Visual Studio with C:\Users\nicol\source\repos\PhotoServer\photo-client> npm run dev) (http://localhost:5173)
+2. Visual Studio for back end (dotnet build then dotnet run at
+C:\Users\nicol\source\repos\PhotoServer\PhotoServer> dotnet run)
+3. Upload api is "POST" method
+4. SELECT "Id", "FileName", "Url", "UploadedAt", "AlbumId"
+	FROM public."Photos"; Check all photos   

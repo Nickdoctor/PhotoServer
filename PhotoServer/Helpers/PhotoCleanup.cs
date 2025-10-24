@@ -1,4 +1,5 @@
-﻿using PhotoServer.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using PhotoServer.Data;
 namespace PhotoServer.Helpers
 {
     public static class PhotoCleanup
@@ -20,11 +21,23 @@ namespace PhotoServer.Helpers
                 .Where(p => !filesOnDisk.Contains(p.FileName))
                 .ToList();
 
-            if (photosToRemove.Count > 0)
+            if (photosToRemove.Count == 0)
+                return;
+
+            try
             {
                 context.Photos.RemoveRange(photosToRemove);
                 context.SaveChanges();
                 Console.WriteLine($"Removed {photosToRemove.Count} missing photo(s) from the database.");
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                // Some rows might have already been deleted
+                Console.WriteLine($"Concurrency exception during cleanup: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected error during cleanup: {ex.Message}");
             }
         }
     }

@@ -37,12 +37,18 @@ export default function App() {
         }
     };
 
-    useEffect(() => { //Request cleanup of old uploads on component mount (First load or refresh)
-        fetch("http://localhost:5081/api/upload/cleanup", { method: "POST" })
-            .then(res => res.json())
-            .then(data => console.log(data.message))
-            .catch(err => console.error(err));
-    }, []);
+    useEffect(() => { // Cleanup old uploads on component mount or first render
+    fetch("http://localhost:5081/api/upload/cleanup", { method: "POST" })
+        .then(async res => {
+            try {
+                const data = await res.json();
+                console.log(data.message);
+            } catch {
+                console.log("Cleanup response not JSON", await res.text());
+            }
+        })
+        .catch(err => console.error(err));
+}, []);
 
     return (
         <div style={{ maxWidth: 400, margin: '80px auto', textAlign: 'center' }}>

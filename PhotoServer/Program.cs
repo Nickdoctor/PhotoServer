@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PhotoServer.Data;
+using PhotoServer.Helpers;
 using System;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,5 +43,11 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
+// Cleanup missing photos on startup
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var env = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
+    PhotoCleanup.CleanupMissingFiles(db, env);
+}
 app.Run();

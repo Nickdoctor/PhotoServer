@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PhotoServer.Data;
 using PhotoServer.Models;
+using PhotoServer.Helpers;
 
 namespace PhotoServer.Controllers
 {
@@ -62,6 +63,12 @@ namespace PhotoServer.Controllers
                 fileName = photo.FileName,
                 url = photo.Url
             });
+        }
+        [HttpPost("cleanup")]
+        public IActionResult CleanupMissingFiles()
+        {
+            PhotoCleanup.CleanupMissingFiles(_context, _env);
+            return Ok(new { message = "Cleanup complete" });
         }
     }
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-
+import { useEffect } from 'react';
 export default function App() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [uploadStatus, setUploadStatus] = useState('');
@@ -36,6 +36,13 @@ export default function App() {
             setUploadStatus('An error occurred during upload.');
         }
     };
+
+    useEffect(() => { //Request cleanup of old uploads on component mount (First load or refresh)
+        fetch("http://localhost:5081/api/upload/cleanup", { method: "POST" })
+            .then(res => res.json())
+            .then(data => console.log(data.message))
+            .catch(err => console.error(err));
+    }, []);
 
     return (
         <div style={{ maxWidth: 400, margin: '80px auto', textAlign: 'center' }}>
